@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: yes
----
+# Reproducible Research: Peer Assessment 1
 
 ## Report Details
 Coursera Reproducible Research Project 1  
@@ -19,23 +14,51 @@ This report uses data collected about the daily activity of an anonymous individ
 The data will be loaded from [this URL] 
 (https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)  
 
-```{r load_data, echo=TRUE}
+
+```r
 if ( !file.exists("activity.csv") ) {
   data_url <- "http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
   download.file(url = data_url, destfile = "rawData.zip")
   unzip(zipfile = "rawData.zip")
 }
 raw_data <- read.csv(file = "activity.csv")
-
 ```
 
 
 ## What is mean total number of steps taken per day?
 - Ignore missing values by removing it from the data set for this calculation
 
-```{r, mean_daily_steps, echo-TRUE}
+
+```r
 library(dplyr)
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.2.2
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.2.2
+```
+
+```r
 # Clean the data
 data1   <- filter(raw_data, !is.na(steps))
 
@@ -52,16 +75,21 @@ ggplot(data=data1, aes(data1$totalSteps)) +
       geom_histogram() + 
       xlab("Daily Step Count") + 
       ggtitle("Total number of steps taken each day")
-
 ```
 
-- The mean total number of steps taken per day is `r meanDailySteps1`.  
-- The median total number of steps taken per day is `r medianDailySteps1`.
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![](PA1_template_files/figure-html/mean_daily_steps, echo-TRUE-1.png) 
+
+- The mean total number of steps taken per day is 10766.18868.  
+- The median total number of steps taken per day is 10765.
 
 ## What is the average daily activity pattern?
 
-```{r average_daily_pattern, echo=TRUE}
 
+```r
 # Clean the data
 data2 <- filter(raw_data, !is.na(steps))
 
@@ -74,18 +102,22 @@ ggplot(data2, aes(interval, meanSteps)) +
       geom_line(color="chartreuse4") + xlab("Time Interval") + 
       ylab("Average Daily Step Count (averaged across all days)") + 
       ggtitle("Time series plot of average daily steps for each time interval")
-
-# Find the interval with the highest average step count
-maxInterval <- data2$interval[which.max(data2$meanSteps)]
-
 ```
 
-- The interval with the highest average step count (averaged across all days) is `r maxInterval`.  
+![](PA1_template_files/figure-html/average_daily_pattern-1.png) 
+
+```r
+# Find the interval with the highest average step count
+maxInterval <- data2$interval[which.max(data2$meanSteps)]
+```
+
+- The interval with the highest average step count (averaged across all days) is 835.  
 
 ## Imputing missing values
 - Replace missing step count values with the mean value of step count
 for that interval across all days.
-```{r imputting missing values, echo=TRUE}
+
+```r
 clean_data <- raw_data
 
 # Replace NAs with the mean value of step count for that time interval
@@ -114,16 +146,21 @@ ggplot(data=data3, aes(data3$totalSteps)) +
       geom_histogram() + 
       xlab("Daily Step Count") + 
       ggtitle("Total number of steps taken each day")
-
 ```
 
-- The mean total number of steps taken per day is `r meanDailySteps3`.  
-- The median total number of steps taken per day is `r medianDailySteps3`.  
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![](PA1_template_files/figure-html/imputting missing values-1.png) 
+
+- The mean total number of steps taken per day is 10766.18868.  
+- The median total number of steps taken per day is 10766.18868.  
   
 There is no significant difference between the mean and median values calculated
 with and without replacement of missing values:  
-- Difference in mean value = `r mean_dif`  
-- Difference in median value = `r median_dif`  
+- Difference in mean value = 0  
+- Difference in median value = 1.188679  
 
 Other replacement policies may yield more significant differences, but it seems
 that the activity pattern of this individual is regular enough that the missing
@@ -131,8 +168,8 @@ data in this sample causes no material harm to the data analysis.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekdays_vs_weekends, echo=TRUE}
 
+```r
 # Add a column to the dataset indicating if the day is a weekday or weekend
 data4 <- mutate(clean_data, weekend = ( grepl("S.*day", weekdays(as.Date(date))) ))
 
@@ -148,8 +185,9 @@ ggplot(data4, aes(interval, meanSteps)) +
       geom_line(color="chartreuse4") + xlab("Time Interval") + 
       ylab("Average Daily Step Count (averaged across all days)") + 
       ggtitle("Time series plot of average daily steps for each time interval")
-
 ```
+
+![](PA1_template_files/figure-html/weekdays_vs_weekends-1.png) 
 
 A quick glance at the time series plots for activity patterns on weekdays vs. 
 weekends shows that weekdays have a higher peak avg. number of steps while 
